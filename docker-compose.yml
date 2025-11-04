@@ -4,26 +4,26 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: psdb
+      POSTGRES_DB: permsdb
     ports:
-      - "5434:5432"
+      - "5436:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d psdb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d permsdb"]
       interval: 5s
       timeout: 3s
       retries: 10
 
-  printscript:
+  permissions:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/psdb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/permsdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "8084:8080"
+      - "8082:8082"
