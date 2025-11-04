@@ -1,1 +1,1 @@
-rootProject.name = "printScriptManager"
+rootProject.name = "print-script-manager"
