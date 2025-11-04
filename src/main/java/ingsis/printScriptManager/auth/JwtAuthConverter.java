@@ -8,21 +8,23 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 public class JwtAuthConverter extends JwtAuthenticationConverter {
-    public JwtAuthConverter() {
-        JwtGrantedAuthoritiesConverter scopeConverter = new JwtGrantedAuthoritiesConverter();
-        scopeConverter.setAuthorityPrefix("SCOPE_");
-        scopeConverter.setAuthoritiesClaimName("scope");
+  public JwtAuthConverter() {
+    JwtGrantedAuthoritiesConverter scopeConverter = new JwtGrantedAuthoritiesConverter();
+    scopeConverter.setAuthorityPrefix("SCOPE_");
+    scopeConverter.setAuthoritiesClaimName("scope");
 
-        setJwtGrantedAuthoritiesConverter((Converter<Jwt, Collection<GrantedAuthority>>) jwt -> {
-            Object perms = jwt.getClaims().get("permissions");
-            if (perms instanceof Collection<?> c && !c.isEmpty()) {
+    setJwtGrantedAuthoritiesConverter(
+        (Converter<Jwt, Collection<GrantedAuthority>>)
+            jwt -> {
+              Object perms = jwt.getClaims().get("permissions");
+              if (perms instanceof Collection<?> c && !c.isEmpty()) {
                 return c.stream()
-                        .filter(String.class::isInstance)
-                        .map(String.class::cast)
-                        .map(p -> (GrantedAuthority) () -> "SCOPE_" + p)
-                        .toList();
-            }
-            return scopeConverter.convert(jwt);
-        });
-    }
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .map(p -> (GrantedAuthority) () -> "SCOPE_" + p)
+                    .toList();
+              }
+              return scopeConverter.convert(jwt);
+            });
+  }
 }

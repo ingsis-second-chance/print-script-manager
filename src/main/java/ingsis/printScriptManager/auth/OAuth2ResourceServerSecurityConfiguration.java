@@ -28,18 +28,23 @@ public class OAuth2ResourceServerSecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(withDefaults())
-            .authorizeHttpRequests(auth -> auth
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(withDefaults())
+        .authorizeHttpRequests(
+            auth ->
+                auth
                     // públicos
-                    .requestMatchers("/", "/actuator/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/ping").permitAll()  // smoke
+                    .requestMatchers("/", "/actuator/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/ping")
+                    .permitAll() // smoke
                     // protegidos (ejemplo)
-                    .requestMatchers(HttpMethod.GET, "/secure/**").hasAuthority("SCOPE_read:snippets")
-                    .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthConverter())));
+                    .requestMatchers(HttpMethod.GET, "/secure/**")
+                    .hasAuthority("SCOPE_read:snippets")
+                    .anyRequest()
+                    .authenticated())
+        .oauth2ResourceServer(
+            oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthConverter())));
     return http.build();
   }
 
@@ -56,8 +61,8 @@ public class OAuth2ResourceServerSecurityConfiguration {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();
     cfg.setAllowedOrigins(List.of("http://localhost:5173")); // ajustá frontends
-    cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-    cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
+    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     cfg.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
     src.registerCorsConfiguration("/**", cfg);
