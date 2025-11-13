@@ -38,8 +38,6 @@ EXPOSE 8081
 
 # Perfil por defecto (si usás perfiles)
 ENV SPRING_PROFILES_ACTIVE=docker
-ENV NEW_RELIC_APP_NAME=print-script-manager
-ENV NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 ENV JAVA_TOOL_OPTIONS="-javaagent:/newrelic/newrelic.jar"
 
 USER appuser
