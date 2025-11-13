@@ -30,11 +30,19 @@ RUN useradd -r -s /bin/false appuser
 # Copiamos el jar generado
 COPY --from=build /app/build/libs/*.jar app.jar
 
+# Copiamos el agente de New Relic (se espera que ./newrelic venga del repo de infra)
+COPY ./newrelic /newrelic
+
 # Puerto interno (ajustá si tu app escucha en otro)
 EXPOSE 8081
 
 # Perfil por defecto (si usás perfiles)
 ENV SPRING_PROFILES_ACTIVE=docker
+ENV NEW_RELIC_APP_NAME=print-script-manager
+ENV NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+ENV JAVA_TOOL_OPTIONS="-javaagent:/newrelic/newrelic.jar"
 
 USER appuser
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+
+# ENTRYPOINT con el agente de New Relic
+ENTRYPOINT ["java", "-javaagent:/newrelic/newrelic.jar", "-jar", "/app/app.jar"]
