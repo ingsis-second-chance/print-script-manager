@@ -12,10 +12,22 @@ version = "0.0.1-SNAPSHOT"
 description = "ingsis project for Spring Boot"
 
 java {
-	toolchain { languageVersion = JavaLanguageVersion.of(17) }
+	toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
-repositories { mavenCentral() }
+repositories {
+	repositories {
+		mavenCentral()
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/Pedrodeforonda/printScript-ingsis")
+			credentials {
+				username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+			}
+		}
+	}
+}
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
