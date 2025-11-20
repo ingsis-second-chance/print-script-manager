@@ -1,13 +1,8 @@
 package ingsis.printScriptManager.services;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
 public class RestTemplateService {
     private RestTemplate restTemplate;
 
