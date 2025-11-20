@@ -12,7 +12,14 @@ COPY build.gradle.kts build.gradle.kts
 RUN chmod +x gradlew
 
 # Pre-descarga de dependencias (sin código aún para cachear)
-RUN ./gradlew --no-daemon dependencies || true
+RUN ./gradlew --no-daemon dependencies || true   @MockBean
+                                                  private LintProducer lintProducer;
+
+                                                  @MockBean
+                                                  private FormatProducer formatProducer;
+
+                                                  @MockBean
+                                                  private StatusConsumer statusConsumer;
 
 # Ahora sí el código
 COPY src src
