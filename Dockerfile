@@ -1,48 +1,21 @@
-# ========== Build stage ==========
-FROM eclipse-temurin:17-jdk AS build
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+COPY . .
+
+# Construimos el JAR
+RUN ./gradlew clean build -x test -x checkstyleMain -x checkstyleTest
+
+FROM eclipse-temurin:21-jre
+
 WORKDIR /app
 
-# Copiamos wrapper + config primero (cache de dependencias)
-COPY gradlew gradlew
-COPY gradle gradle
-COPY settings.gradle.kts settings.gradle.kts
-COPY build.gradle.kts build.gradle.kts
+# Copiamos el JAR
+COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Permisos para el wrapper
-RUN chmod +x gradlew
+# Copiar New Relic
+COPY newrelic newrelic
 
-# Pre-descarga de dependencias (sin código aún para cachear)
-RUN ./gradlew --no-daemon dependencies || true
+EXPOSE 8082
 
-# Ahora sí el código
-COPY src src
-
-# Construcción del JAR (sin tests si ya corren en CI)
-RUN ./gradlew --no-daemon clean bootJar -x test
-
-# ========== Runtime stage ==========
-FROM eclipse-temurin:17-jre AS runtime
-WORKDIR /app
-
-# Usuario no-root (opcional)
-RUN useradd -r -s /bin/false appuser
-
-# Copiamos el jar generado
-COPY --from=build /app/build/libs/*.jar app.jar
-
-# Copiamos el agente de New Relic (se espera que ./newrelic venga del repo de infra)
-COPY ./newrelic /newrelic
-
-# Puerto interno (ajustá si tu app escucha en otro)
-EXPOSE 8081
-
-# Perfil por defecto (si usás perfiles)
-ENV SPRING_PROFILES_ACTIVE=docker
-ENV NEW_RELIC_APP_NAME=print-script-manager
-ENV NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
-ENV JAVA_TOOL_OPTIONS="-javaagent:/newrelic/newrelic.jar"
-
-USER appuser
-
-# ENTRYPOINT con el agente de New Relic
-ENTRYPOINT ["java", "-javaagent:/newrelic/newrelic.jar", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/newrelic/newrelic.jar", "-jar", "/app/app.jar"]
