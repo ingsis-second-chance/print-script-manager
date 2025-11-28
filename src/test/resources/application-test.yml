@@ -1,0 +1,40 @@
+spring:
+  # ❌ Evita que Spring intente conectar a una base real
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+  # ✅ Fake Redis config (para ConnectionFactory)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+
+  # ⚠ Para evitar que Spring security cargue default OAuth resource server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://dummy-issuer.com/
+          jwk-set-uri: http://dummy-issuer.com/.well-known/jwks.json
+
+# Dummy server port
+server:
+  port: 9999
+
+# Si el proyecto usa otras properties personalizadas
+manager:
+  bucket:
+    url: http://dummy-bucket.com
+
+bucket:
+  url: http://dummy-bucket.com
+
+# Para evitar crasheo en websockets, actuators u otras cosas
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
