@@ -27,7 +27,9 @@ jobs:
         run: ./gradlew spotlessCheck --no-daemon
 
       - name: Checkstyle (linter)
-        run: ./gradlew checkstyleMain checkstyleTest --no-daemon
+        run: ./gradlew checkstyleMain checkstyleTest --no-daemon \
+              -Pgpr.user=${{ secrets.GPR_USER_SECRET }} \
+              -Pgpr.key=${{ secrets.GPR_KEY_SECRET }}
 
       - name: Build & Test
         run: ./gradlew clean test --no-daemon
