@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: print-script-manager-test
+
+  # Redis para tests (no hace falta que exista el servicio, sólo que haya props)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # No se usa en tests porque el profile "test" tiene TestSecurityConfig,
+          # pero dejamos algo para que no falte la propiedad.
+          issuer-uri: https://dummy-issuer/
+
+# ===== Auth0 dummy para tests =====
+auth0:
+  issuer: https://dummy-issuer/
+  audience: dummy-audience
+
+# ===== Redis Streams (placeholders que usan tus @Value("${...}") ) =====
+STREAM_LINT_KEY: snippet-lint-test
+STREAM_FORMAT_KEY: snippet-format-test
+STREAM_STATUS_KEY: snippet-status-test
+STREAM_CONSUMER_GROUP_SNIPPET: snippet-consumer-group-test
+
+stream:
+  redis:
+    stream:
+      lint:
+        key: ${STREAM_LINT_KEY}
+      format:
+        key: ${STREAM_FORMAT_KEY}
+      status:
+        key: ${STREAM_STATUS_KEY}
+    consumer:
+      group: ${STREAM_CONSUMER_GROUP_SNIPPET}
+
+# Puerto random en tests (opcional, pero suele ser cómodo)
+server:
+  port: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,mappings
+  endpoint:
+    health:
+      show-details: always
