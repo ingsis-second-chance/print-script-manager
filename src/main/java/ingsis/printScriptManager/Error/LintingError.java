@@ -10,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LintingError {
-    private String message;
+  private String message;
 
-    public static LintingError of(String message) {
-        return new LintingError(message);
-    }
+  public static LintingError of(String message) {
+    return new LintingError(message);
+  }
 }
