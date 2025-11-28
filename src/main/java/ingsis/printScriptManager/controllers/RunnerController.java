@@ -1,0 +1,48 @@
+package ingsis.printScriptManager.controllers;
+
+import ingsis.printScriptManager.DTO.Response;
+import ingsis.printScriptManager.DTO.TestContextDTO;
+import ingsis.printScriptManager.DTO.ValidateRequestDTO;
+import ingsis.printScriptManager.Error.ParsingError;
+import ingsis.printScriptManager.services.RunnerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+@RestController
+@RequestMapping("/runner")
+public class RunnerController {
+    @Autowired
+    private RunnerService runnerService;
+
+    @PostMapping("/validate")
+    public ResponseEntity<Object> validate(@RequestBody ValidateRequestDTO validateRequestDTO) {
+        String code = validateRequestDTO.getCode();
+        String version = validateRequestDTO.getVersion();
+        Response<List<ParsingError>> response = runnerService.validate(code, version);
+        if (response.getData() != null) {
+            return new ResponseEntity<>(response.getData(), HttpStatus.EXPECTATION_FAILED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<Object> executeTest(@RequestBody TestContextDTO testContextDTO) {
+        Response<List<String>> result = runnerService.execute(testContextDTO.getSnippetId(),
+                testContextDTO.getVersion(), testContextDTO.getInputs());
+        if (result.isError()) {
+            return ResponseEntity.status(result.getError().code()).body(result.getError().message());
+        }
+        if (result.getData().equals(testContextDTO.getExpected())) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+}
