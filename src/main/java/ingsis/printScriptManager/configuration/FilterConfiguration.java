@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FilterConfiguration {
-    @Bean
-    public CorrelationIdFilter correlationIdFilter() {
-        return new CorrelationIdFilter();
-    }
+  @Bean
+  public CorrelationIdFilter correlationIdFilter() {
+    return new CorrelationIdFilter();
+  }
 }

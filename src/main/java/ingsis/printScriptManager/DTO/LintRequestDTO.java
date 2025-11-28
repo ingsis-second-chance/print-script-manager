@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class LintRequestDTO {
     private String code;
-
     @NotEmpty
     private String version;
 }

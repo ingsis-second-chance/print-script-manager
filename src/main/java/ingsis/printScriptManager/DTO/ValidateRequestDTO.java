@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ValidateRequestDTO {
-    private String code;
+  private String code;
 
-    private String version;
+  private String version;
 }
