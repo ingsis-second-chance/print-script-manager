@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LintRequestDTO {
-    private String code;
-    @NotEmpty
-    private String version;
+  private String code;
+  @NotEmpty private String version;
 }
