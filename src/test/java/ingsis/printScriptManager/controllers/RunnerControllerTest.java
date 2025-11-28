@@ -29,7 +29,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import ingsis.printScriptManager.DTO.Response;
 import ingsis.printScriptManager.DTO.TestContextDTO;
 import ingsis.printScriptManager.DTO.ValidateRequestDTO;
-import ingsis.printScriptManager.TestSecurityConfiguration;
+import ingsis.printScriptManager.TestSecurityConfig;
 import ingsis.printScriptManager.redis.FormatConsumer;
 import ingsis.printScriptManager.redis.LintConsumer;
 import ingsis.printScriptManager.services.RunnerService;
@@ -37,7 +37,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @MockitoSettings(strictness = Strictness.LENIENT)
-@Import(TestSecurityConfiguration.class)
+@Import(TestSecurityConfig.class)
 @SpringBootTest
 class RunnerControllerTest {
 
