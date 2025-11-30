@@ -12,6 +12,8 @@ import Utils.LintSerializer;
 import ingsis.printScriptManager.DTO.Response;
 import ingsis.printScriptManager.Error.ParsingError;
 import ingsis.printScriptManager.TestSecurityConfig;
+import ingsis.printScriptManager.redis.FormatConsumer;
+import ingsis.printScriptManager.redis.LintConsumer;
 import ingsis.printScriptManager.web.BucketRequestExecutor;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,10 @@ public class RunnerServiceTest {
   @Autowired private RunnerService runnerService;
 
   @MockBean private BucketRequestExecutor bucketRequestExecutor;
+
+  @MockBean private LintConsumer lintConsumer;
+
+  @MockBean private FormatConsumer formatConsumer;
 
   @BeforeEach
   void setUp() {
