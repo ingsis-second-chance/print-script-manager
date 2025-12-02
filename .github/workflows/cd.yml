@@ -65,8 +65,7 @@ jobs:
 
       - name: Start VM
         run: |
-          az vm start --resource-group ${{ secrets.AZURE_RG }} --name ${{ env.VM_NAME }} --no-wait
-          sleep 60 # Esperar un tiempo prudencial para que el SSH esté disponible
+          az vm start --resource-group ${{ secrets.AZURE_RG }} --name ${{ env.VM_NAME }}
         shell: bash
 
       - name: Deploy to Azure VM (prod)
@@ -92,5 +91,5 @@ jobs:
       - name: Stop VM
         if: always() # Asegura que la VM se apague incluso si el despliegue falla
         run: |
-          az vm stop --resource-group ${{ secrets.AZURE_RG }} --name ${{ env.VM_NAME }} --no-wait
+          az vm deallocate --resource-group ${{ secrets.AZURE_RG }} --name ${{ env.VM_NAME }}
         shell: bash
