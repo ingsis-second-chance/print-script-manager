@@ -6,10 +6,10 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${AUTH0_ISSUER}
-    data:
-      redis:
-        host: redis
-        port: 6379
+  data:
+    redis:
+      host: redis
+      port: 6379
 
 stream:
   redis:
