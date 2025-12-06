@@ -33,9 +33,9 @@ jobs:
           context: .
           tags: ghcr.io/ingsis-second-chance/print-script-manager:${{ env.IMAGE_TAG }}
           file: ./Dockerfile
-          secrets: |
-            gpr_user=${{ github.actor }}
-            gpr_token=${{ secrets.GITHUB_TOKEN }}
+          build-args: |
+            GPR_USER=${{ github.actor }}
+            GPR_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
   deploy-to-azure:
     runs-on: ubuntu-latest
@@ -62,6 +62,27 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
+
+      - name: Wait for VM to be available
+        run: |
+          echo "Checking VM status..."
+          for i in {1..60}; do
+            VM_STATE=$(az vm get-instance-view --resource-group ${{ secrets.AZURE_RG }} --name ${{ env.VM_NAME }} --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus" -o tsv)
+
+            if [ "$VM_STATE" = "VM deallocated" ] || [ "$VM_STATE" = "VM stopped" ]; then
+              echo "VM is stopped, safe to start"
+              break
+            fi
+
+            echo "VM is running (another deploy in progress), waiting... ($i/60)"
+            sleep 10
+          done
+
+          if [ $i -eq 60 ]; then
+            echo "Timeout waiting for VM to be available"
+            exit 1
+          fi
+        shell: bash
 
       - name: Start VM
         run: |
