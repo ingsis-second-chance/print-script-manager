@@ -2,7 +2,6 @@ package ingsis.printScriptManager.auth;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,16 +32,16 @@ public class OAuth2ResourceServerSecurityConfiguration {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(withDefaults())
         .authorizeHttpRequests(
-            auth ->
-                auth
-                    // públicos
-                    .requestMatchers("/", "/actuator/**")
+            authorizeRequests ->
+                authorizeRequests
+                    .requestMatchers("/")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/ping")
-                    .permitAll() // smoke
-                    // protegidos (ejemplo)
-                    .requestMatchers(HttpMethod.GET, "/secure/**")
+                    .requestMatchers(HttpMethod.GET, "/snippet")
                     .hasAuthority("SCOPE_read:snippets")
+                    .requestMatchers(HttpMethod.GET, "/snippet/*")
+                    .hasAuthority("SCOPE_read:snippets")
+                    .requestMatchers(HttpMethod.POST, "/snippet")
+                    .hasAuthority("SCOPE_write:snippets")
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(
@@ -57,17 +56,5 @@ public class OAuth2ResourceServerSecurityConfiguration {
     OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(audience);
     dec.setJwtValidator(new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
     return dec;
-  }
-
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration cfg = new CorsConfiguration();
-    cfg.setAllowedOrigins(List.of("http://localhost:5173")); // ajustá frontends
-    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-    cfg.setAllowCredentials(true);
-    UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
-    src.registerCorsConfiguration("/**", cfg);
-    return src;
   }
 }
