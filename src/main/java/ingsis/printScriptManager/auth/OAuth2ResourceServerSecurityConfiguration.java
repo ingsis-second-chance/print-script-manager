@@ -29,23 +29,23 @@ public class OAuth2ResourceServerSecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .cors(withDefaults())
-        .authorizeHttpRequests(
-            authorizeRequests ->
-                authorizeRequests
-                    .requestMatchers("/")
+    http.authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/snippet")
-                    .hasAuthority("SCOPE_read:snippets")
-                    .requestMatchers(HttpMethod.GET, "/snippet/*")
-                    .hasAuthority("SCOPE_read:snippets")
-                    .requestMatchers(HttpMethod.POST, "/snippet")
+                    .requestMatchers(HttpMethod.POST, "/runner/**")
                     .hasAuthority("SCOPE_write:snippets")
+                    .requestMatchers(HttpMethod.GET, "/swagger-ui")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/swagger-ui/*")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/v3/api-docs")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/v3/api-docs/*")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
-        .cors(withDefaults())
         .csrf(AbstractHttpConfigurer::disable);
     return http.build();
   }
