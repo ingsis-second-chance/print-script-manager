@@ -44,7 +44,7 @@ public class RunnerController {
     }
   }
 
-  @GetMapping("/execute")
+  @PostMapping("/execute")
   public ResponseEntity<Object> runSnippet(@RequestBody SnippetDTO snippetDTO) {
     Response<List<String>> response =
         runnerService.execute(
