@@ -1,6 +1,7 @@
 package ingsis.printScriptManager.controllers;
 
 import ingsis.printScriptManager.DTO.Response;
+import ingsis.printScriptManager.DTO.SnippetDTO;
 import ingsis.printScriptManager.DTO.TestContextDTO;
 import ingsis.printScriptManager.DTO.ValidateRequestDTO;
 import ingsis.printScriptManager.Error.ParsingError;
@@ -9,10 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/runner")
@@ -44,5 +42,16 @@ public class RunnerController {
     } else {
       return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
     }
+  }
+
+  @PostMapping("/execute")
+  public ResponseEntity<Object> runSnippet(@RequestBody SnippetDTO snippetDTO) {
+    Response<List<String>> response =
+        runnerService.execute(
+            snippetDTO.getSnippetId(), snippetDTO.getVersion(), snippetDTO.getInputs());
+    if (response.isError()) {
+      return ResponseEntity.status(response.getError().code()).body(response.getError().message());
+    }
+    return ResponseEntity.ok(response.getData());
   }
 }
