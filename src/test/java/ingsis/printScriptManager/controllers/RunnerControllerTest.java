@@ -6,14 +6,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import ingsis.printScriptManager.DTO.Response;
+import ingsis.printScriptManager.DTO.SnippetDTO;
 import ingsis.printScriptManager.DTO.TestContextDTO;
 import ingsis.printScriptManager.DTO.ValidateRequestDTO;
+import ingsis.printScriptManager.Error.Error;
 import ingsis.printScriptManager.TestSecurityConfig;
 import ingsis.printScriptManager.redis.FormatConsumer;
 import ingsis.printScriptManager.redis.LintConsumer;
 import ingsis.printScriptManager.services.RunnerService;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -37,11 +38,6 @@ class RunnerControllerTest {
   @MockBean private LintConsumer lintConsumer;
 
   @MockBean private FormatConsumer formatConsumer;
-
-  @BeforeEach
-  void setUp() {
-    // vacio → NO MOCKEES SECURITY ACA
-  }
 
   @Test
   void testValidate() {
@@ -69,5 +65,24 @@ class RunnerControllerTest {
             new TestContextDTO("snippet", "1.0", List.of("input"), List.of("Hello World!2")));
 
     assertEquals(417, response2.getStatusCode().value());
+  }
+
+  @Test
+  void testRunSnippet() {
+    when(runnerService.execute(anyString(), anyString(), anyList()))
+        .thenReturn(Response.withData(List.of("Output")));
+
+    ResponseEntity<Object> response =
+        runnerController.runSnippet(new SnippetDTO("snippet", "1.0", List.of("input")));
+
+    assertEquals(200, response.getStatusCode().value());
+
+    when(runnerService.execute(anyString(), anyString(), anyList()))
+        .thenReturn(Response.withError(new Error(400, "Execution Error")));
+
+    ResponseEntity<Object> response2 =
+        runnerController.runSnippet(new SnippetDTO("snippet", "1.0", List.of("input")));
+
+    assertEquals(400, response2.getStatusCode().value());
   }
 }
