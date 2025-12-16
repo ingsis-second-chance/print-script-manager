@@ -45,13 +45,13 @@ public class RunnerController {
   }
 
   @GetMapping("/execute")
-    public ResponseEntity<Object> runSnippet(@RequestBody SnippetDTO snippetDTO) {
-        Response<List<String>> response =
-                runnerService.execute(
-                        snippetDTO.getSnippetId(), snippetDTO.getVersion(), snippetDTO.getInputs());
-        if (response.isError()) {
-            return ResponseEntity.status(response.getError().code()).body(response.getError().message());
-        }
-        return ResponseEntity.ok(response.getData());
+  public ResponseEntity<Object> runSnippet(@RequestBody SnippetDTO snippetDTO) {
+    Response<List<String>> response =
+        runnerService.execute(
+            snippetDTO.getSnippetId(), snippetDTO.getVersion(), snippetDTO.getInputs());
+    if (response.isError()) {
+      return ResponseEntity.status(response.getError().code()).body(response.getError().message());
     }
+    return ResponseEntity.ok(response.getData());
+  }
 }
